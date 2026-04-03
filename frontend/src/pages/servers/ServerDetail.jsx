@@ -4,6 +4,7 @@ import { Row, Col, Card, Statistic, Button, Tag, Typography, Spin, Descriptions 
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import api from '../../services/api'
 import ServerAllocate from './ServerAllocate'
+import MetricsChart from '../../components/MetricsChart'
 
 const { Title, Text } = Typography
 const STATUS_COLOR = {
@@ -15,6 +16,7 @@ export default function ServerDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [server, setServer] = useState(null)
+  const [metrics, setMetrics] = useState(null)
   const [loading, setLoading] = useState(true)
   const [allocateOpen, setAllocateOpen] = useState(false)
 
@@ -27,7 +29,21 @@ export default function ServerDetail() {
     }
   }
 
-  useEffect(() => { fetchServer() }, [id])
+  const fetchMetrics = async () => {
+    try {
+      const res = await api.get(`/servers/${id}/metrics`)
+      setMetrics(res.data)
+    } catch (err) {
+      console.error('Failed to fetch metrics:', err)
+    }
+  }
+
+  useEffect(() => {
+    fetchServer()
+    fetchMetrics()
+    const interval = setInterval(fetchMetrics, 5000)
+    return () => clearInterval(interval)
+  }, [id])
 
   if (loading) return <Spin size="large" style={{ display: 'block', margin: '80px auto' }} />
 
@@ -55,21 +71,28 @@ export default function ServerDetail() {
         <Descriptions.Item label="Type">{server?.description}</Descriptions.Item>
       </Descriptions>
 
-      {server?.metrics?.available && (
-        <Row gutter={[16, 16]}>
-          <Col xs={24} md={8}>
-            <Card><Statistic title="CPU Usage"
-              value={server.metrics.cpuUsagePercent?.toFixed(1)} suffix="%" /></Card>
-          </Col>
-          <Col xs={24} md={8}>
-            <Card><Statistic title="RAM Usage"
-              value={server.metrics.ramUsagePercent?.toFixed(1)} suffix="%" /></Card>
-          </Col>
-          <Col xs={24} md={8}>
-            <Card><Statistic title="Disk Usage"
-              value={server.metrics.diskUsagePercent?.toFixed(1)} suffix="%" /></Card>
-          </Col>
-        </Row>
+      {metrics && (
+        <>
+          <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+            <Col xs={24} md={8}>
+              <Card><Statistic title="CPU Usage"
+                value={metrics.cpuUsagePercent?.toFixed(1)} suffix="%" /></Card>
+            </Col>
+            <Col xs={24} md={8}>
+              <Card><Statistic title="RAM Usage"
+                value={metrics.ramUsagePercent?.toFixed(1)} suffix="%" /></Card>
+            </Col>
+            <Col xs={24} md={8}>
+              <Card><Statistic title="Disk Usage"
+                value={metrics.diskUsagePercent?.toFixed(1)} suffix="%" /></Card>
+            </Col>
+          </Row>
+          <Row gutter={[16, 16]}>
+            <Col xs={24}>
+              <MetricsChart serverId={id} hostname={server?.hostname} refreshInterval={5000} />
+            </Col>
+          </Row>
+        </>
       )}
 
       <ServerAllocate
