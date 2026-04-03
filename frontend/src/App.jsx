@@ -6,6 +6,11 @@ import AdminDashboard from './pages/dashboard/AdminDashboard'
 import TechnicianDashboard from './pages/dashboard/TechnicianDashboard'
 import CustomerDashboard from './pages/dashboard/CustomerDashboard'
 import ManagerDashboard from './pages/dashboard/ManagerDashboard'
+import ZoneList from './pages/zones/ZoneList'
+import RackList from './pages/racks/RackList'
+import RackDetail from './pages/racks/RackDetail'
+import ServerList from './pages/servers/ServerList'
+import ServerDetail from './pages/servers/ServerDetail'
 import { Result, Button } from 'antd'
 import { useNavigate } from 'react-router-dom'
 
@@ -48,6 +53,33 @@ export default function App() {
       <Route path="/dashboard/manager" element={
         <RoleGuard allowedRoles={['MANAGER']}>
           <ManagerDashboard />
+        </RoleGuard>
+      } />
+
+      {/* Inventory routes — DC_ADMIN + TECHNICIAN */}
+      <Route path="/zones" element={
+        <RoleGuard allowedRoles={['DC_ADMIN', 'MANAGER', 'TECHNICIAN']}>
+          <ZoneList />
+        </RoleGuard>
+      } />
+      <Route path="/racks" element={
+        <RoleGuard allowedRoles={['DC_ADMIN', 'TECHNICIAN', 'MANAGER']}>
+          <RackList />
+        </RoleGuard>
+      } />
+      <Route path="/racks/:id" element={
+        <RoleGuard allowedRoles={['DC_ADMIN', 'TECHNICIAN', 'MANAGER']}>
+          <RackDetail />
+        </RoleGuard>
+      } />
+      <Route path="/servers" element={
+        <RoleGuard allowedRoles={['DC_ADMIN', 'TECHNICIAN']}>
+          <ServerList />
+        </RoleGuard>
+      } />
+      <Route path="/servers/:id" element={
+        <RoleGuard allowedRoles={['DC_ADMIN', 'TECHNICIAN', 'CUSTOMER']}>
+          <ServerDetail />
         </RoleGuard>
       } />
 
