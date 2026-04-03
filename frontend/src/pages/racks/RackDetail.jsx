@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Row, Col, Card, Statistic, Button, Tag, Typography, Spin } from 'antd'
+import { Row, Col, Card, Statistic, Button, Tag, Typography, Spin, Progress } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import api from '../../services/api'
+import { useWebSocket } from '../../hooks/useWebSocket'
 import RackVisualizer from '../../components/RackVisualizer'
 
 const { Title, Text } = Typography
@@ -15,6 +16,20 @@ export default function RackDetail() {
   const [servers, setServers] = useState([])
   const [utilization, setUtilization] = useState(null)
   const [loading, setLoading] = useState(true)
+
+  const onRackUpdate = useCallback((data) => {
+    if (data.rackId && parseInt(data.rackId) === parseInt(id)) {
+      setUtilization((prev) => ({
+        ...prev,
+        uSpaceUsed: data.uSpaceUsed || prev?.uSpaceUsed,
+        uSpacePercent: data.uSpacePercent || prev?.uSpacePercent,
+        powerUsedKw: data.powerUsedKw || prev?.powerUsedKw,
+        powerPercent: data.powerPercent || prev?.powerPercent,
+      }))
+    }
+  }, [id])
+
+  useWebSocket(`/topic/rack/${id}`, onRackUpdate)
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -54,6 +69,11 @@ export default function RackDetail() {
               value={utilization?.uSpaceUsed}
               suffix={`/ ${utilization?.uSpaceTotal}U`}
             />
+            <Progress
+              percent={utilization?.uSpacePercent || 0}
+              status={utilization?.uSpacePercent > 85 ? 'exception' : 'normal'}
+              style={{ marginTop: 8 }}
+            />
             <div style={{ marginTop: 8 }}>
               <Text type="secondary">{utilization?.uSpacePercent?.toFixed(1)}% used</Text>
             </div>
@@ -64,6 +84,11 @@ export default function RackDetail() {
             <Statistic
               value={utilization?.powerUsedKw?.toFixed(2)}
               suffix={`/ ${utilization?.powerMaxKw}kW`}
+            />
+            <Progress
+              percent={utilization?.powerPercent || 0}
+              status={utilization?.powerPercent > 85 ? 'exception' : 'normal'}
+              style={{ marginTop: 8 }}
             />
             <div style={{ marginTop: 8 }}>
               <Text type="secondary">{utilization?.powerPercent?.toFixed(1)}% used</Text>
