@@ -2,8 +2,13 @@ package com.coloio.srms.controller;
 
 import com.coloio.srms.domain.enums.ServerStatus;
 import com.coloio.srms.entity.ServerEntity;
+import com.coloio.srms.entity.ServerMetricEntity;
+import com.coloio.srms.entity.UserEntity;
 import com.coloio.srms.pattern.strategy.AllocationResult;
+import com.coloio.srms.repository.ServerMetricRepository;
+import com.coloio.srms.repository.UserRepository;
 import com.coloio.srms.service.ServerService;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,15 +18,22 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/servers")
 public class ServerController {
 
     private final ServerService serverService;
+    private final ServerMetricRepository metricRepository;
+    private final UserRepository userRepository;
 
-    public ServerController(ServerService serverService) {
+    public ServerController(ServerService serverService,
+                            ServerMetricRepository metricRepository,
+                            UserRepository userRepository) {
         this.serverService = serverService;
+        this.metricRepository = metricRepository;
+        this.userRepository = userRepository;
     }
 
     @PostMapping
@@ -85,5 +97,52 @@ public class ServerController {
             @AuthenticationPrincipal UserDetails userDetails) {
         // Customer server lookup wired in Sprint 3 once MonitoringService is in place
         return ResponseEntity.ok(List.of());
+    }
+
+    @GetMapping("/{id}/metrics")
+    @PreAuthorize("hasAnyRole('DC_ADMIN','TECHNICIAN','CUSTOMER')")
+    public ResponseEntity<Map<String, Object>> getLatestMetrics(@PathVariable Long id) {
+        ServerEntity server = serverService.getServer(id);
+        Optional<ServerMetricEntity> metric = metricRepository.findTopByServer_ServerIdOrderByRecordedAtDesc(id);
+        if (metric.isEmpty()) {
+            return ResponseEntity.ok(Map.of(
+                    "serverId", server.getServerId(),
+                    "hostname", server.getHostname(),
+                    "cpuUsagePercent", 0.0,
+                    "ramUsagePercent", 0.0,
+                    "diskUsagePercent", 0.0,
+                    "recordedAt", null
+            ));
+        }
+        ServerMetricEntity m = metric.get();
+        return ResponseEntity.ok(Map.of(
+                "serverId", server.getServerId(),
+                "hostname", server.getHostname(),
+                "cpuUsagePercent", m.getCpuUsagePct(),
+                "ramUsagePercent", m.getRamUsagePct(),
+                "diskUsagePercent", m.getDiskUsagePct(),
+                "recordedAt", m.getRecordedAt()
+        ));
+    }
+
+    @GetMapping("/{id}/metrics/history")
+    @PreAuthorize("hasAnyRole('DC_ADMIN','TECHNICIAN','CUSTOMER')")
+    public ResponseEntity<List<Map<String, Object>>> getMetricsHistory(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "100") int size) {
+        ServerEntity server = serverService.getServer(id);
+        List<ServerMetricEntity> metrics = metricRepository.findAllByServer_ServerIdOrderByRecordedAtDesc(
+                id, PageRequest.of(page, size)
+        );
+        return ResponseEntity.ok(metrics.stream().map(m -> Map.of(
+                "metricId", m.getMetricId(),
+                "serverId", server.getServerId(),
+                "hostname", server.getHostname(),
+                "cpuUsagePercent", m.getCpuUsagePct(),
+                "ramUsagePercent", m.getRamUsagePct(),
+                "diskUsagePercent", m.getDiskUsagePct(),
+                "recordedAt", m.getRecordedAt()
+        )).toList());
     }
 }
