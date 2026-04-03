@@ -5,6 +5,7 @@ import {
   AlertOutlined, ToolOutlined, TeamOutlined, FileTextOutlined
 } from '@ant-design/icons'
 import AppLayout from '../../components/AppLayout'
+import AlertsPanel from '../../components/AlertsPanel'
 import api from '../../services/api'
 
 const { Title } = Typography
@@ -43,6 +44,11 @@ export default function AdminDashboard() {
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <Card><Statistic title="Pending Maintenance" value="—" prefix={<ToolOutlined />} /></Card>
+        </Col>
+      </Row>
+      <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+        <Col xs={24}>
+          <AlertsPanel />
         </Col>
       </Row>
     </AppLayout>
