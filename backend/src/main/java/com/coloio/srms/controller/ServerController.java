@@ -1,6 +1,7 @@
 package com.coloio.srms.controller;
 
 import com.coloio.srms.domain.enums.ServerStatus;
+import com.coloio.srms.domain.server.ServerComponent;
 import com.coloio.srms.entity.ServerEntity;
 import com.coloio.srms.entity.ServerMetricEntity;
 import com.coloio.srms.entity.UserEntity;
@@ -102,7 +103,7 @@ public class ServerController {
     @GetMapping("/{id}/metrics")
     @PreAuthorize("hasAnyRole('DC_ADMIN','TECHNICIAN','CUSTOMER')")
     public ResponseEntity<Map<String, Object>> getLatestMetrics(@PathVariable Long id) {
-        ServerEntity server = serverService.getServer(id);
+        ServerComponent server = serverService.getServer(id);
         Optional<ServerMetricEntity> metric = metricRepository.findTopByServer_ServerIdOrderByRecordedAtDesc(id);
         if (metric.isEmpty()) {
             return ResponseEntity.ok(Map.of(
@@ -131,7 +132,7 @@ public class ServerController {
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int size) {
-        ServerEntity server = serverService.getServer(id);
+        ServerComponent server = serverService.getServer(id);
         List<ServerMetricEntity> metrics = metricRepository.findAllByServer_ServerIdOrderByRecordedAtDesc(
                 id, PageRequest.of(page, size)
         );
