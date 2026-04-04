@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Table, Button, Tag, Typography, Space, Modal, Form, Input, InputNumber, Select } from 'antd'
-import { PlusOutlined, EyeOutlined, SearchOutlined } from '@ant-design/icons'
+import { Table, Button, Tag, Typography, Space, Modal, Form, Input, InputNumber, Select, message } from 'antd'
+import { PlusOutlined, EyeOutlined, SearchOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import api from '../../services/api'
 
@@ -21,6 +21,8 @@ export default function ServerList() {
   const [form] = Form.useForm()
   const [searchHostname, setSearchHostname] = useState('')
   const [searchStatus, setSearchStatus] = useState(null)
+  const [selectedRowKeys, setSelectedRowKeys] = useState([])
+  const [bulkStatus, setBulkStatus] = useState(null)
   const navigate = useNavigate()
 
   const fetchServers = async (hostname, status) => {
@@ -39,6 +41,39 @@ export default function ServerList() {
   }
 
   useEffect(() => { fetchServers() }, [])
+
+  const handleBulkStatusUpdate = async () => {
+    if (!bulkStatus || selectedRowKeys.length === 0) return
+    try {
+      await api.patch('/bulk/servers/status', { serverIds: selectedRowKeys, status: bulkStatus })
+      message.success(`Updated ${selectedRowKeys.length} servers to ${bulkStatus}`)
+      setSelectedRowKeys([])
+      setBulkStatus(null)
+      fetchServers(searchHostname, searchStatus)
+    } catch {
+      message.error('Bulk update failed')
+    }
+  }
+
+  const handleBulkDecommission = async () => {
+    if (selectedRowKeys.length === 0) return
+    Modal.confirm({
+      title: 'Decommission Selected Servers',
+      content: `Decommission ${selectedRowKeys.length} server(s)?`,
+      okText: 'Decommission',
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        try {
+          await api.post('/bulk/servers/decommission', { serverIds: selectedRowKeys })
+          message.success(`Decommissioned ${selectedRowKeys.length} servers`)
+          setSelectedRowKeys([])
+          fetchServers(searchHostname, searchStatus)
+        } catch {
+          message.error('Bulk decommission failed')
+        }
+      }
+    })
+  }
 
   const onRegister = async (values) => {
     await api.post('/servers', values)
@@ -96,7 +131,28 @@ export default function ServerList() {
         </Button>
       </Space>
 
-      <Table dataSource={servers} columns={columns} rowKey="serverId" loading={loading} />
+      {selectedRowKeys.length > 0 && (
+        <Space style={{ marginBottom: 12, padding: '8px 12px', background: '#f0f5ff', borderRadius: 6 }}>
+          <span>{selectedRowKeys.length} selected</span>
+          <Select placeholder="Set status..." style={{ width: 180 }} value={bulkStatus}
+            onChange={setBulkStatus}
+            options={['OPERATIONAL','FAULTY','MAINTENANCE']
+              .map(s => ({ value: s, label: s }))} />
+          <Button type="primary" size="small" onClick={handleBulkStatusUpdate}
+                  disabled={!bulkStatus}>Apply</Button>
+          <Button danger size="small" icon={<DeleteOutlined />} onClick={handleBulkDecommission}>
+            Decommission All
+          </Button>
+        </Space>
+      )}
+
+      <Table
+        dataSource={servers}
+        columns={columns}
+        rowKey="serverId"
+        loading={loading}
+        rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
+      />
 
       <Modal title="Register Server" open={modalOpen}
              onCancel={() => setModalOpen(false)}
