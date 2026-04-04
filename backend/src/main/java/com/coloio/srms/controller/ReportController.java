@@ -1,6 +1,7 @@
 package com.coloio.srms.controller;
 
 import com.coloio.srms.service.ReportService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "Reports", description = "Capacity, utilization, and maintenance history reports")
 @RestController
 @RequestMapping("/api/reports")
 @PreAuthorize("hasAnyRole('DC_ADMIN','MANAGER')")
