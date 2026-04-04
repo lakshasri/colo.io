@@ -161,14 +161,16 @@ public class ServerController {
         List<ServerMetricEntity> metrics = metricRepository.findAllByServer_ServerIdOrderByRecordedAtDesc(
                 id, PageRequest.of(page, size)
         );
-        return ResponseEntity.ok(metrics.stream().map(m -> Map.of(
-                "metricId", m.getMetricId(),
-                "serverId", server.getServerId(),
-                "hostname", server.getHostname(),
-                "cpuUsagePercent", m.getCpuUsagePct(),
-                "ramUsagePercent", m.getRamUsagePct(),
-                "diskUsagePercent", m.getDiskUsagePct(),
-                "recordedAt", m.getRecordedAt()
-        )).toList());
+        return ResponseEntity.ok(metrics.stream().map(m -> {
+            Map<String, Object> row = new java.util.LinkedHashMap<>();
+            row.put("metricId", m.getMetricId());
+            row.put("serverId", server.getServerId());
+            row.put("hostname", server.getHostname());
+            row.put("cpuUsagePercent", m.getCpuUsagePct());
+            row.put("ramUsagePercent", m.getRamUsagePct());
+            row.put("diskUsagePercent", m.getDiskUsagePct());
+            row.put("recordedAt", m.getRecordedAt());
+            return row;
+        }).toList());
     }
 }
