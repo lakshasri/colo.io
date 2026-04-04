@@ -16,6 +16,7 @@ export default function RackDetail() {
   const [servers, setServers] = useState([])
   const [utilization, setUtilization] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [zonePower, setZonePower] = useState(null)
 
   const onRackUpdate = useCallback((data) => {
     if (data.rackId && parseInt(data.rackId) === parseInt(id)) {
@@ -42,6 +43,10 @@ export default function RackDetail() {
         setRack(rackRes.data)
         setServers(serverRes.data)
         setUtilization(utilRes.data)
+        if (rackRes.data?.zone?.zoneId) {
+          const zoneRes = await api.get(`/power/zones/${rackRes.data.zone.zoneId}`).catch(() => null)
+          if (zoneRes) setZonePower(zoneRes.data)
+        }
       } finally {
         setLoading(false)
       }
@@ -101,6 +106,35 @@ export default function RackDetail() {
           </Card>
         </Col>
       </Row>
+
+      {zonePower && (
+        <Card
+          title={`Zone Power Budget — ${zonePower.zoneName}`}
+          style={{ marginTop: 16 }}
+          extra={zonePower.overBudget
+            ? <Tag color="red">OVER BUDGET</Tag>
+            : <Tag color="green">Within Budget</Tag>}
+        >
+          <Row gutter={[16, 0]}>
+            <Col xs={24} md={16}>
+              <Progress
+                percent={Math.min(zonePower.utilizationPct, 100)}
+                status={zonePower.overBudget ? 'exception' : zonePower.utilizationPct > 85 ? 'active' : 'normal'}
+                format={() => `${zonePower.utilizationPct}%`}
+                strokeWidth={14}
+              />
+            </Col>
+            <Col xs={24} md={8}>
+              <Row gutter={8}>
+                <Col span={8}><Statistic title="Budget" value={zonePower.budgetKw} suffix="kW" /></Col>
+                <Col span={8}><Statistic title="Used" value={zonePower.usedKw?.toFixed(2)} suffix="kW" /></Col>
+                <Col span={8}><Statistic title="Remaining" value={zonePower.remainingKw?.toFixed(2)} suffix="kW"
+                  valueStyle={{ color: zonePower.overBudget ? '#cf1322' : '#3f8600' }} /></Col>
+              </Row>
+            </Col>
+          </Row>
+        </Card>
+      )}
 
       <Card title="Rack Layout" style={{ marginTop: 16 }}>
         <RackVisualizer rack={rack} servers={servers} />
