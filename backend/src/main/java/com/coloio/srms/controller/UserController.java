@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('DC_ADMIN')")
+    @PreAuthorize("hasAnyRole('DC_ADMIN','MANAGER')")
     public ResponseEntity<List<UserResponse>> getAllUsers(
             @RequestParam(required = false) UserRole role) {
         List<UserResponse> users = (role != null)
