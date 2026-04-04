@@ -3,6 +3,7 @@ package com.coloio.srms.controller;
 import com.coloio.srms.domain.enums.ServerStatus;
 import com.coloio.srms.domain.server.ServerComponent;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import com.coloio.srms.repository.ServerRepository;
 import com.coloio.srms.entity.ServerEntity;
 import com.coloio.srms.entity.ServerMetricEntity;
 import com.coloio.srms.entity.UserEntity;
@@ -30,13 +31,25 @@ public class ServerController {
     private final ServerService serverService;
     private final ServerMetricRepository metricRepository;
     private final UserRepository userRepository;
+    private final ServerRepository serverRepository;
 
     public ServerController(ServerService serverService,
                             ServerMetricRepository metricRepository,
-                            UserRepository userRepository) {
+                            UserRepository userRepository,
+                            ServerRepository serverRepository) {
         this.serverService = serverService;
         this.metricRepository = metricRepository;
         this.userRepository = userRepository;
+        this.serverRepository = serverRepository;
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('DC_ADMIN','TECHNICIAN')")
+    public ResponseEntity<List<ServerEntity>> search(
+            @RequestParam(required = false) ServerStatus status,
+            @RequestParam(required = false) String hostname,
+            @RequestParam(required = false) Long rackId) {
+        return ResponseEntity.ok(serverRepository.search(status, hostname, rackId));
     }
 
     @PostMapping
