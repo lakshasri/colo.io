@@ -1,19 +1,25 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Card, Descriptions, Tag, Button, Select, Space, Typography, message, Divider, List } from 'antd'
-import { ArrowLeftOutlined, UndoOutlined, RedoOutlined } from '@ant-design/icons'
+import {
+  Card, Descriptions, Tag, Button, Select, Space, Typography,
+  message, Divider, List, Checkbox, Input, Form
+} from 'antd'
+import { ArrowLeftOutlined, UndoOutlined, RedoOutlined, PlusOutlined } from '@ant-design/icons'
 import api from '../../services/api'
 
 const { Title } = Typography
 const PRIORITY_COLOR = { LOW: 'blue', MEDIUM: 'gold', HIGH: 'orange', CRITICAL: 'red' }
-const STATUS_COLOR = { OPEN: 'red', IN_PROGRESS: 'orange', RESOLVED: 'green', CLOSED: 'default' }
-const STATUS_OPTIONS = ['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'].map(s => ({ value: s, label: s }))
+const STATUS_COLOR = { OPEN: 'red', PENDING: 'gold', IN_PROGRESS: 'orange', RESOLVED: 'green', CLOSED: 'default', CANCELLED: 'default' }
+const STATUS_OPTIONS = ['OPEN', 'PENDING', 'IN_PROGRESS', 'RESOLVED', 'CLOSED', 'CANCELLED']
+  .map(s => ({ value: s, label: s }))
 
 export default function MaintenanceDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [ticket, setTicket] = useState(null)
   const [newStatus, setNewStatus] = useState('')
+  const [checklist, setChecklist] = useState([])
+  const [newItem, setNewItem] = useState('')
   const [commandHistory, setCommandHistory] = useState([])
   const [canUndo, setCanUndo] = useState(false)
   const [canRedo, setCanRedo] = useState(false)
@@ -22,6 +28,11 @@ export default function MaintenanceDetail() {
     const res = await api.get(`/maintenance/${id}`)
     setTicket(res.data)
     setNewStatus(res.data.status)
+  }
+
+  const fetchChecklist = async () => {
+    const res = await api.get(`/maintenance/${id}/checklist`)
+    setChecklist(res.data)
   }
 
   const fetchHistory = async () => {
@@ -33,6 +44,7 @@ export default function MaintenanceDetail() {
 
   useEffect(() => {
     fetchTicket()
+    fetchChecklist()
     fetchHistory()
   }, [id])
 
@@ -44,6 +56,19 @@ export default function MaintenanceDetail() {
     } catch {
       message.error('Update failed')
     }
+  }
+
+  const addChecklistItem = async () => {
+    if (!newItem.trim()) return
+    await api.post(`/maintenance/${id}/checklist`, { description: newItem })
+    setNewItem('')
+    fetchChecklist()
+  }
+
+  const tickItem = async (itemId) => {
+    const user = JSON.parse(localStorage.getItem('username') || '"unknown"')
+    await api.patch(`/maintenance/checklist/${itemId}/tick`, { completedBy: user })
+    fetchChecklist()
   }
 
   const handleUndo = async () => {
@@ -58,16 +83,33 @@ export default function MaintenanceDetail() {
     fetchHistory()
   }
 
+  const handleLifecycle = async (action) => {
+    try {
+      await api.post(`/maintenance/${id}/${action}`)
+      message.success(`${action} successful`)
+      fetchTicket()
+    } catch {
+      message.error(`${action} failed`)
+    }
+  }
+
   if (!ticket) return null
+
+  const completedCount = checklist.filter(i => i.completed).length
 
   return (
     <div>
       <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/maintenance')}
-        style={{ marginBottom: 16 }}>
-        Back
-      </Button>
+        style={{ marginBottom: 16 }}>Back</Button>
 
-      <Card title={<Title level={4} style={{ margin: 0 }}>Ticket #{ticket.ticketId}</Title>}>
+      <Card title={<Title level={4} style={{ margin: 0 }}>Ticket #{ticket.ticketId}</Title>}
+        extra={
+          <Space>
+            <Button onClick={() => handleLifecycle('start')} disabled={ticket.status !== 'PENDING'}>Start</Button>
+            <Button onClick={() => handleLifecycle('complete')} type="primary" disabled={ticket.status !== 'IN_PROGRESS'}>Complete</Button>
+            <Button onClick={() => handleLifecycle('cancel')} danger disabled={['RESOLVED','CLOSED','CANCELLED'].includes(ticket.status)}>Cancel</Button>
+          </Space>
+        }>
         <Descriptions bordered column={2}>
           <Descriptions.Item label="Title" span={2}>{ticket.title}</Descriptions.Item>
           <Descriptions.Item label="Priority">
@@ -77,6 +119,10 @@ export default function MaintenanceDetail() {
             <Tag color={STATUS_COLOR[ticket.status]}>{ticket.status}</Tag>
           </Descriptions.Item>
           <Descriptions.Item label="Assigned To">{ticket.assignedTo || '—'}</Descriptions.Item>
+          <Descriptions.Item label="Approved">{ticket.approved ? 'Yes' : 'No'}</Descriptions.Item>
+          <Descriptions.Item label="Scheduled">
+            {ticket.scheduledAt ? new Date(ticket.scheduledAt).toLocaleString() : '—'}
+          </Descriptions.Item>
           <Descriptions.Item label="Created">
             {new Date(ticket.createdAt).toLocaleString()}
           </Descriptions.Item>
@@ -85,17 +131,37 @@ export default function MaintenanceDetail() {
               {new Date(ticket.resolvedAt).toLocaleString()}
             </Descriptions.Item>
           )}
-          <Descriptions.Item label="Description" span={2}>
-            {ticket.description || '—'}
-          </Descriptions.Item>
+          <Descriptions.Item label="Description" span={2}>{ticket.description || '—'}</Descriptions.Item>
         </Descriptions>
 
         <Divider />
         <Space>
-          <Select value={newStatus} options={STATUS_OPTIONS} onChange={setNewStatus}
-            style={{ width: 160 }} />
+          <Select value={newStatus} options={STATUS_OPTIONS} onChange={setNewStatus} style={{ width: 160 }} />
           <Button type="primary" onClick={updateStatus}>Update Status</Button>
         </Space>
+      </Card>
+
+      <Card title={`Checklist (${completedCount}/${checklist.length} done)`} style={{ marginTop: 16 }}
+        extra={
+          <Space>
+            <Input value={newItem} onChange={e => setNewItem(e.target.value)}
+              placeholder="New item" style={{ width: 200 }}
+              onPressEnter={addChecklistItem} />
+            <Button icon={<PlusOutlined />} onClick={addChecklistItem}>Add</Button>
+          </Space>
+        }>
+        <List dataSource={checklist} rowKey="itemId"
+          renderItem={item => (
+            <List.Item>
+              <Checkbox checked={item.completed} disabled={item.completed}
+                onChange={() => tickItem(item.itemId)}>
+                <span style={{ textDecoration: item.completed ? 'line-through' : 'none' }}>
+                  {item.description}
+                </span>
+                {item.completedBy && <span style={{ color: '#999', marginLeft: 8 }}>— {item.completedBy}</span>}
+              </Checkbox>
+            </List.Item>
+          )} />
       </Card>
 
       <Card title="Command History" style={{ marginTop: 16 }}
