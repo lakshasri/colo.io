@@ -43,6 +43,7 @@ public class ServerController {
         this.serverRepository = serverRepository;
     }
 
+    @io.swagger.v3.oas.annotations.Operation(summary = "Search servers by status, hostname, or rack")
     @GetMapping("/search")
     @PreAuthorize("hasAnyRole('DC_ADMIN','TECHNICIAN')")
     public ResponseEntity<List<ServerEntity>> search(
