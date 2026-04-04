@@ -1,5 +1,6 @@
 package com.coloio.srms.controller;
 
+import com.coloio.srms.entity.ChecklistItemEntity;
 import com.coloio.srms.entity.MaintenanceTicketEntity;
 import com.coloio.srms.pattern.command.*;
 import com.coloio.srms.repository.RackRepository;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +37,8 @@ public class MaintenanceController {
         this.rackRepository = rackRepository;
     }
 
+    // --- Ticket CRUD ---
+
     @GetMapping
     public List<MaintenanceTicketEntity> getAllTickets() {
         return maintenanceService.getAllTickets();
@@ -57,13 +61,13 @@ public class MaintenanceController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('DC_ADMIN','TECHNICIAN')")
-    public MaintenanceTicketEntity createTicket(@RequestBody Map<String, String> body) {
-        return maintenanceService.createTicket(
+    public MaintenanceTicketEntity schedule(@RequestBody Map<String, String> body) {
+        LocalDateTime scheduledAt = body.containsKey("scheduledAt")
+                ? LocalDateTime.parse(body.get("scheduledAt")) : LocalDateTime.now().plusDays(1);
+        return maintenanceService.scheduleTicket(
                 Long.parseLong(body.get("serverId")),
-                body.get("title"),
-                body.get("description"),
-                body.get("priority")
-        );
+                body.get("title"), body.get("description"),
+                body.getOrDefault("priority", "MEDIUM"), scheduledAt);
     }
 
     @PatchMapping("/{id}/status")
@@ -73,41 +77,87 @@ public class MaintenanceController {
         return maintenanceService.updateStatus(id, body.get("status"), body.get("assignedTo"));
     }
 
-    // Command pattern: allocate via invoker (supports undo)
+    // --- Lifecycle commands ---
+
+    @PostMapping("/{id}/assign")
+    @PreAuthorize("hasAnyRole('DC_ADMIN','TECHNICIAN')")
+    public MaintenanceTicketEntity assign(@PathVariable Long id,
+                                          @RequestBody Map<String, String> body) {
+        return maintenanceService.assignTechnician(id, Long.parseLong(body.get("technicianId")));
+    }
+
+    @PostMapping("/{id}/start")
+    @PreAuthorize("hasAnyRole('DC_ADMIN','TECHNICIAN')")
+    public MaintenanceTicketEntity start(@PathVariable Long id) {
+        return maintenanceService.startTicket(id);
+    }
+
+    @PostMapping("/{id}/complete")
+    @PreAuthorize("hasAnyRole('DC_ADMIN','TECHNICIAN')")
+    public MaintenanceTicketEntity complete(@PathVariable Long id) {
+        return maintenanceService.completeTicket(id);
+    }
+
+    @PostMapping("/{id}/cancel")
+    @PreAuthorize("hasAnyRole('DC_ADMIN','TECHNICIAN')")
+    public MaintenanceTicketEntity cancel(@PathVariable Long id,
+                                           @RequestBody Map<String, String> body) {
+        return maintenanceService.cancelTicket(id, body.getOrDefault("reason", "No reason given"));
+    }
+
+    @PutMapping("/{id}/approve")
+    @PreAuthorize("hasRole('MANAGER')")
+    public MaintenanceTicketEntity approve(@PathVariable Long id) {
+        return maintenanceService.approveTicket(id);
+    }
+
+    // --- Checklist ---
+
+    @GetMapping("/{id}/checklist")
+    public List<ChecklistItemEntity> getChecklist(@PathVariable Long id) {
+        return maintenanceService.getChecklist(id);
+    }
+
+    @PostMapping("/{id}/checklist")
+    @PreAuthorize("hasAnyRole('DC_ADMIN','TECHNICIAN')")
+    public ChecklistItemEntity addItem(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        return maintenanceService.addChecklistItem(id, body.get("description"));
+    }
+
+    @PatchMapping("/checklist/{itemId}/tick")
+    @PreAuthorize("hasAnyRole('DC_ADMIN','TECHNICIAN')")
+    public ChecklistItemEntity tickItem(@PathVariable Long itemId,
+                                         @RequestBody Map<String, String> body) {
+        return maintenanceService.tickChecklistItem(itemId, body.getOrDefault("completedBy", "unknown"));
+    }
+
+    // --- Server command endpoints (with undo/redo) ---
+
     @PostMapping("/commands/allocate")
     @PreAuthorize("hasAnyRole('DC_ADMIN','TECHNICIAN')")
     public ResponseEntity<Map<String, Object>> allocate(@RequestBody Map<String, String> body) {
-        AllocateServerCommand cmd = new AllocateServerCommand(
+        commandInvoker.execute(new AllocateServerCommand(
                 serverService, serverRepository, rackRepository,
-                Long.parseLong(body.get("serverId")),
-                body.get("strategy")
-        );
-        commandInvoker.execute(cmd);
+                Long.parseLong(body.get("serverId")), body.get("strategy")));
         return ResponseEntity.ok(Map.of("message", "allocated", "canUndo", commandInvoker.canUndo()));
     }
 
-    // Command pattern: move server
     @PostMapping("/commands/move")
     @PreAuthorize("hasAnyRole('DC_ADMIN','TECHNICIAN')")
     public ResponseEntity<Map<String, Object>> move(@RequestBody Map<String, String> body) {
-        MoveServerCommand cmd = new MoveServerCommand(
+        commandInvoker.execute(new MoveServerCommand(
                 serverRepository, rackRepository,
                 Long.parseLong(body.get("serverId")),
-                Long.parseLong(body.get("targetRackId"))
-        );
-        commandInvoker.execute(cmd);
+                Long.parseLong(body.get("targetRackId"))));
         return ResponseEntity.ok(Map.of("message", "moved", "canUndo", commandInvoker.canUndo()));
     }
 
-    // Command pattern: deallocate
     @PostMapping("/commands/deallocate")
     @PreAuthorize("hasAnyRole('DC_ADMIN','TECHNICIAN')")
     public ResponseEntity<Map<String, Object>> deallocate(@RequestBody Map<String, String> body) {
-        DeallocateServerCommand cmd = new DeallocateServerCommand(
+        commandInvoker.execute(new DeallocateServerCommand(
                 serverRepository, rackRepository,
-                Long.parseLong(body.get("serverId"))
-        );
-        commandInvoker.execute(cmd);
+                Long.parseLong(body.get("serverId"))));
         return ResponseEntity.ok(Map.of("message", "deallocated", "canUndo", commandInvoker.canUndo()));
     }
 
@@ -115,16 +165,16 @@ public class MaintenanceController {
     @PreAuthorize("hasAnyRole('DC_ADMIN','TECHNICIAN')")
     public ResponseEntity<Map<String, Object>> undo() {
         boolean result = commandInvoker.undo();
-        return ResponseEntity.ok(Map.of("undone", result, "canUndo", commandInvoker.canUndo(),
-                "canRedo", commandInvoker.canRedo()));
+        return ResponseEntity.ok(Map.of("undone", result,
+                "canUndo", commandInvoker.canUndo(), "canRedo", commandInvoker.canRedo()));
     }
 
     @PostMapping("/commands/redo")
     @PreAuthorize("hasAnyRole('DC_ADMIN','TECHNICIAN')")
     public ResponseEntity<Map<String, Object>> redo() {
         boolean result = commandInvoker.redo();
-        return ResponseEntity.ok(Map.of("redone", result, "canUndo", commandInvoker.canUndo(),
-                "canRedo", commandInvoker.canRedo()));
+        return ResponseEntity.ok(Map.of("redone", result,
+                "canUndo", commandInvoker.canUndo(), "canRedo", commandInvoker.canRedo()));
     }
 
     @GetMapping("/commands/history")
@@ -132,7 +182,6 @@ public class MaintenanceController {
         return ResponseEntity.ok(Map.of(
                 "history", commandInvoker.getHistory(),
                 "canUndo", commandInvoker.canUndo(),
-                "canRedo", commandInvoker.canRedo()
-        ));
+                "canRedo", commandInvoker.canRedo()));
     }
 }
