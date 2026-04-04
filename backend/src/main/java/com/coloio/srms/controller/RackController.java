@@ -27,6 +27,7 @@ public class RackController {
         this.rackRepository = rackRepository;
     }
 
+    @io.swagger.v3.oas.annotations.Operation(summary = "Search racks by zone, status, or power threshold")
     @GetMapping("/search")
     @PreAuthorize("hasAnyRole('DC_ADMIN','TECHNICIAN','MANAGER')")
     public ResponseEntity<List<RackEntity>> search(
