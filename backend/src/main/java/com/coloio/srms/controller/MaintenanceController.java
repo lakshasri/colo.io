@@ -3,6 +3,7 @@ package com.coloio.srms.controller;
 import com.coloio.srms.entity.ChecklistItemEntity;
 import com.coloio.srms.entity.MaintenanceTicketEntity;
 import com.coloio.srms.pattern.command.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import com.coloio.srms.repository.RackRepository;
 import com.coloio.srms.repository.ServerRepository;
 import com.coloio.srms.service.MaintenanceService;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "Maintenance", description = "Maintenance lifecycle, checklist, and command undo/redo")
 @RestController
 @RequestMapping("/api/maintenance")
 public class MaintenanceController {
