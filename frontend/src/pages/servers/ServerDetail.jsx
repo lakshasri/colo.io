@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Row, Col, Card, Statistic, Button, Tag, Typography, Spin, Descriptions } from 'antd'
-import { ArrowLeftOutlined } from '@ant-design/icons'
+import { Row, Col, Card, Statistic, Button, Tag, Typography, Spin, Descriptions, Modal, message } from 'antd'
+import { ArrowLeftOutlined, DeleteOutlined } from '@ant-design/icons'
 import api from '../../services/api'
 import ServerAllocate from './ServerAllocate'
 import MetricsChart from '../../components/MetricsChart'
@@ -19,6 +19,7 @@ export default function ServerDetail() {
   const [metrics, setMetrics] = useState(null)
   const [loading, setLoading] = useState(true)
   const [allocateOpen, setAllocateOpen] = useState(false)
+  const [decommissioning, setDecommissioning] = useState(false)
 
   const fetchServer = async () => {
     try {
@@ -45,6 +46,27 @@ export default function ServerDetail() {
     return () => clearInterval(interval)
   }, [id])
 
+  const handleDecommission = () => {
+    Modal.confirm({
+      title: 'Decommission Server',
+      content: `Are you sure you want to decommission "${server?.hostname}"? This will remove it from its rack.`,
+      okText: 'Decommission',
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        setDecommissioning(true)
+        try {
+          await api.patch(`/servers/${id}/status`, { status: 'DECOMMISSIONED' })
+          message.success('Server decommissioned')
+          fetchServer()
+        } catch {
+          message.error('Failed to decommission server')
+        } finally {
+          setDecommissioning(false)
+        }
+      }
+    })
+  }
+
   if (loading) return <Spin size="large" style={{ display: 'block', margin: '80px auto' }} />
 
   return (
@@ -58,6 +80,12 @@ export default function ServerDetail() {
         {server?.status === 'UNALLOCATED' && (
           <Button type="primary" size="small" onClick={() => setAllocateOpen(true)}>
             Allocate to Rack
+          </Button>
+        )}
+        {server?.status !== 'DECOMMISSIONED' && (
+          <Button danger size="small" icon={<DeleteOutlined />}
+                  loading={decommissioning} onClick={handleDecommission}>
+            Decommission
           </Button>
         )}
       </div>
