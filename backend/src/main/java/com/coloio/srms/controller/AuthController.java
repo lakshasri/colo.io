@@ -5,12 +5,15 @@ import com.coloio.srms.dto.request.LoginRequest;
 import com.coloio.srms.dto.response.AuthResponse;
 import com.coloio.srms.entity.UserEntity;
 import com.coloio.srms.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Authentication", description = "Login and token refresh")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
