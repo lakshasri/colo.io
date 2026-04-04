@@ -57,6 +57,47 @@ A full-stack data center infrastructure management platform built for colocation
 
 ```
 colo.io/
-├── backend/       # Spring Boot — domain, patterns, services, controllers
-└── frontend/      # React — dashboards, rack visualizer, live alerts
+├── backend/
+│   └── src/main/java/com/coloio/srms/
+│       ├── domain/        # Core domain classes (User, Rack, Server, Alert)
+│       ├── pattern/       # GoF patterns (factory, strategy, command, decorator)
+│       ├── entity/        # JPA entities
+│       ├── repository/    # Spring Data repositories
+│       ├── service/       # Business logic
+│       ├── controller/    # REST API
+│       ├── config/        # Security, WebSocket, JWT, AOP
+│       └── audit/         # AOP audit aspect
+└── frontend/
+    └── src/
+        ├── components/    # AppLayout, RackVisualizer, AlertsPanel, MetricsChart
+        ├── context/       # AuthContext
+        ├── hooks/         # useWebSocket
+        ├── pages/         # Dashboard, Racks, Servers, Maintenance, Reports
+        └── services/      # Axios API client
 ```
+
+---
+
+## Setup
+
+### Prerequisites
+- Java 21, Maven 3.9+
+- PostgreSQL 15 (create a `srms` database)
+- Node.js 20+
+
+### Backend
+```bash
+cd backend
+cp src/main/resources/application.properties.example src/main/resources/application.properties
+# Edit DB credentials
+./mvnw spring-boot:run
+```
+
+### Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+API docs available at `http://localhost:8080/swagger-ui.html` after starting the backend.
