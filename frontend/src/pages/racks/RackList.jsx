@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Table, Button, Modal, Form, Input, InputNumber, Select, Space,
          Typography, Progress, Tag } from 'antd'
-import { PlusOutlined, EyeOutlined } from '@ant-design/icons'
+import { PlusOutlined, EyeOutlined, SearchOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import api from '../../services/api'
 
@@ -15,14 +15,22 @@ export default function RackList() {
   const [loading, setLoading] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [form] = Form.useForm()
+  const [filterZone, setFilterZone] = useState(null)
+  const [filterStatus, setFilterStatus] = useState(null)
   const navigate = useNavigate()
 
-  const fetchAll = async () => {
+  const fetchAll = async (zoneId, status) => {
     setLoading(true)
     try {
-      const [rackRes, zoneRes] = await Promise.all([api.get('/racks'), api.get('/zones')])
-      setRacks(rackRes.data)
+      const zoneRes = await api.get('/zones')
       setZones(zoneRes.data)
+      const params = {}
+      if (zoneId) params.zoneId = zoneId
+      if (status) params.status = status
+      const rackRes = Object.keys(params).length
+        ? await api.get('/racks/search', { params })
+        : await api.get('/racks')
+      setRacks(rackRes.data)
     } finally {
       setLoading(false)
     }
@@ -83,6 +91,19 @@ export default function RackList() {
         <Title level={4} style={{ margin: 0 }}>Racks</Title>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalOpen(true)}>
           New Rack
+        </Button>
+      </Space>
+
+      <Space style={{ marginBottom: 12 }}>
+        <Select placeholder="Filter by zone" allowClear style={{ width: 180 }}
+          value={filterZone} onChange={setFilterZone}
+          options={zones.map(z => ({ value: z.zoneId, label: z.name }))} />
+        <Select placeholder="Filter by status" allowClear style={{ width: 160 }}
+          value={filterStatus} onChange={setFilterStatus}
+          options={['ACTIVE','MAINTENANCE','DECOMMISSIONED'].map(s => ({ value: s, label: s }))} />
+        <Button icon={<SearchOutlined />}
+          onClick={() => fetchAll(filterZone, filterStatus)}>
+          Search
         </Button>
       </Space>
 
