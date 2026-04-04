@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Row, Col, Card, Statistic, Typography } from 'antd'
 import {
-  DashboardOutlined, HddOutlined, AlertOutlined, ToolOutlined
+  DashboardOutlined, HddOutlined, AlertOutlined, ToolOutlined, SafetyCertificateOutlined
 } from '@ant-design/icons'
 import AppLayout from '../../components/AppLayout'
 import api from '../../services/api'
@@ -13,6 +13,7 @@ const menuItems = [
   { key: 'servers',     label: 'My Servers',  icon: <HddOutlined />,       path: '/servers' },
   { key: 'alerts',      label: 'Alerts',      icon: <AlertOutlined />,     path: '/alerts' },
   { key: 'maintenance', label: 'Maintenance', icon: <ToolOutlined />,      path: '/maintenance' },
+  { key: 'sla',         label: 'My SLAs',     icon: <SafetyCertificateOutlined />, path: '/sla' },
 ]
 
 export default function CustomerDashboard() {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Row, Col, Card, Statistic, Typography } from 'antd'
 import {
   DashboardOutlined, BarChartOutlined, ToolOutlined,
-  ClusterOutlined, FileTextOutlined
+  ClusterOutlined, FileTextOutlined, SafetyCertificateOutlined
 } from '@ant-design/icons'
 import AppLayout from '../../components/AppLayout'
 import api from '../../services/api'
@@ -14,6 +14,7 @@ const menuItems = [
   { key: 'analytics',   label: 'Reports',     icon: <BarChartOutlined />,  path: '/reports' },
   { key: 'maintenance', label: 'Maintenance', icon: <ToolOutlined />,      path: '/maintenance' },
   { key: 'racks',       label: 'Capacity',    icon: <ClusterOutlined />,   path: '/racks' },
+  { key: 'sla',         label: 'SLA',         icon: <SafetyCertificateOutlined />, path: '/sla' },
 ]
 
 export default function ManagerDashboard() {
