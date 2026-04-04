@@ -2,6 +2,7 @@ package com.coloio.srms.controller;
 
 import com.coloio.srms.entity.AuditLogEntity;
 import com.coloio.srms.repository.AuditLogRepository;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +21,7 @@ public class AuditController {
         this.auditLogRepository = auditLogRepository;
     }
 
+    @Operation(summary = "Paginated audit log, newest first")
     @GetMapping
     public Page<AuditLogEntity> getAuditLog(
             @RequestParam(defaultValue = "0") int page,
