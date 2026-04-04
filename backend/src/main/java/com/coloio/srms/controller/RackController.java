@@ -3,6 +3,7 @@ package com.coloio.srms.controller;
 import com.coloio.srms.domain.enums.RackStatus;
 import com.coloio.srms.domain.rack.Rack;
 import com.coloio.srms.service.RackService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "Racks", description = "Rack inventory and utilization management")
 @RestController
 @RequestMapping("/api/racks")
 public class RackController {
