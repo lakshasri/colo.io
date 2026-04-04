@@ -1,6 +1,7 @@
 package com.coloio.srms.controller;
 
 import com.coloio.srms.service.ReportService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,16 +26,19 @@ public class ReportController {
         this.reportService = reportService;
     }
 
+    @Operation(summary = "Zone and rack capacity breakdown")
     @GetMapping("/capacity")
     public Map<String, Object> capacity() {
         return reportService.capacityReport();
     }
 
+    @Operation(summary = "Average CPU, RAM, and disk per server")
     @GetMapping("/utilization")
     public List<Map<String, Object>> utilization() {
         return reportService.serverUtilizationReport();
     }
 
+    @Operation(summary = "Maintenance completion rate and average resolution time")
     @GetMapping("/maintenance-history")
     public Map<String, Object> maintenanceHistory() {
         return reportService.maintenanceHistoryReport();
