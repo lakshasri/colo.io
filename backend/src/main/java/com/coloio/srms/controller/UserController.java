@@ -3,6 +3,7 @@ package com.coloio.srms.controller;
 import com.coloio.srms.domain.enums.UserRole;
 import com.coloio.srms.dto.request.CreateUserRequest;
 import com.coloio.srms.dto.response.UserResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import com.coloio.srms.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Users", description = "User management and role assignment")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
