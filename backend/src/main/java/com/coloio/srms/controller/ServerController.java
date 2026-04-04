@@ -2,6 +2,7 @@ package com.coloio.srms.controller;
 
 import com.coloio.srms.domain.enums.ServerStatus;
 import com.coloio.srms.domain.server.ServerComponent;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import com.coloio.srms.entity.ServerEntity;
 import com.coloio.srms.entity.ServerMetricEntity;
 import com.coloio.srms.entity.UserEntity;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Tag(name = "Servers", description = "Server inventory, allocation, and metrics")
 @RestController
 @RequestMapping("/api/servers")
 public class ServerController {
