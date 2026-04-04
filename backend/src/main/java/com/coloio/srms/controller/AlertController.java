@@ -3,6 +3,7 @@ package com.coloio.srms.controller;
 import com.coloio.srms.entity.AlertEntity;
 import com.coloio.srms.repository.UserRepository;
 import com.coloio.srms.service.AlertService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "Alerts", description = "Alert management and acknowledgement")
 @RestController
 @RequestMapping("/api/alerts")
 public class AlertController {
