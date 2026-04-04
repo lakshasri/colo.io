@@ -19,6 +19,7 @@ const menuItems = [
   { key: 'maintenance', label: 'Maintenance', icon: <ToolOutlined />,      path: '/maintenance' },
   { key: 'reports',     label: 'Reports',     icon: <FileTextOutlined />,  path: '/reports' },
   { key: 'users',       label: 'Users',       icon: <TeamOutlined />,      path: '/users' },
+  { key: 'sla',         label: 'SLA',         icon: <FileTextOutlined />,  path: '/sla' },
 ]
 
 export default function AdminDashboard() {
