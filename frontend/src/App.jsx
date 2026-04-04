@@ -13,6 +13,8 @@ import ServerList from './pages/servers/ServerList'
 import ServerDetail from './pages/servers/ServerDetail'
 import MaintenanceList from './pages/maintenance/MaintenanceList'
 import MaintenanceDetail from './pages/maintenance/MaintenanceDetail'
+import MaintenanceCalendar from './pages/maintenance/MaintenanceCalendar'
+import ReportsPage from './pages/reports/ReportsPage'
 import { Result, Button } from 'antd'
 import { useNavigate } from 'react-router-dom'
 
@@ -93,6 +95,16 @@ export default function App() {
       <Route path="/maintenance/:id" element={
         <RoleGuard allowedRoles={['DC_ADMIN', 'TECHNICIAN']}>
           <MaintenanceDetail />
+        </RoleGuard>
+      } />
+      <Route path="/maintenance/calendar" element={
+        <RoleGuard allowedRoles={['DC_ADMIN', 'TECHNICIAN', 'MANAGER']}>
+          <MaintenanceCalendar />
+        </RoleGuard>
+      } />
+      <Route path="/reports" element={
+        <RoleGuard allowedRoles={['DC_ADMIN', 'MANAGER']}>
+          <ReportsPage />
         </RoleGuard>
       } />
 
