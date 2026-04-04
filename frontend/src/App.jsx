@@ -11,6 +11,8 @@ import RackList from './pages/racks/RackList'
 import RackDetail from './pages/racks/RackDetail'
 import ServerList from './pages/servers/ServerList'
 import ServerDetail from './pages/servers/ServerDetail'
+import MaintenanceList from './pages/maintenance/MaintenanceList'
+import MaintenanceDetail from './pages/maintenance/MaintenanceDetail'
 import { Result, Button } from 'antd'
 import { useNavigate } from 'react-router-dom'
 
@@ -80,6 +82,17 @@ export default function App() {
       <Route path="/servers/:id" element={
         <RoleGuard allowedRoles={['DC_ADMIN', 'TECHNICIAN', 'CUSTOMER']}>
           <ServerDetail />
+        </RoleGuard>
+      } />
+
+      <Route path="/maintenance" element={
+        <RoleGuard allowedRoles={['DC_ADMIN', 'TECHNICIAN']}>
+          <MaintenanceList />
+        </RoleGuard>
+      } />
+      <Route path="/maintenance/:id" element={
+        <RoleGuard allowedRoles={['DC_ADMIN', 'TECHNICIAN']}>
+          <MaintenanceDetail />
         </RoleGuard>
       } />
 
