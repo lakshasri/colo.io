@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Table, Button, Tag, Typography, Space, Modal, Form, Input, InputNumber } from 'antd'
-import { PlusOutlined, EyeOutlined } from '@ant-design/icons'
+import { Table, Button, Tag, Typography, Space, Modal, Form, Input, InputNumber, Select } from 'antd'
+import { PlusOutlined, EyeOutlined, SearchOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import api from '../../services/api'
 
@@ -19,12 +19,19 @@ export default function ServerList() {
   const [loading, setLoading] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [form] = Form.useForm()
+  const [searchHostname, setSearchHostname] = useState('')
+  const [searchStatus, setSearchStatus] = useState(null)
   const navigate = useNavigate()
 
-  const fetchServers = async () => {
+  const fetchServers = async (hostname, status) => {
     setLoading(true)
     try {
-      const res = await api.get('/servers')
+      const params = {}
+      if (hostname) params.hostname = hostname
+      if (status) params.status = status
+      const res = Object.keys(params).length
+        ? await api.get('/servers/search', { params })
+        : await api.get('/servers')
       setServers(res.data)
     } finally {
       setLoading(false)
@@ -72,6 +79,20 @@ export default function ServerList() {
         <Title level={4} style={{ margin: 0 }}>Servers</Title>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalOpen(true)}>
           Register Server
+        </Button>
+      </Space>
+
+      <Space style={{ marginBottom: 12 }}>
+        <Input placeholder="Search hostname..." prefix={<SearchOutlined />}
+          value={searchHostname} onChange={e => setSearchHostname(e.target.value)}
+          style={{ width: 220 }} allowClear />
+        <Select placeholder="Filter by status" allowClear style={{ width: 180 }}
+          value={searchStatus} onChange={setSearchStatus}
+          options={['OPERATIONAL','FAULTY','MAINTENANCE','DECOMMISSIONED','UNALLOCATED']
+            .map(s => ({ value: s, label: s }))} />
+        <Button icon={<SearchOutlined />}
+          onClick={() => fetchServers(searchHostname, searchStatus)}>
+          Search
         </Button>
       </Space>
 
