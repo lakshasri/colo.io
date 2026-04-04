@@ -19,17 +19,20 @@ public class MaintenanceService {
     private final ServerRepository serverRepository;
     private final UserRepository userRepository;
     private final CommandInvoker commandInvoker;
+    private final NotificationService notificationService;
 
     public MaintenanceService(MaintenanceTicketRepository ticketRepository,
                                ChecklistItemRepository checklistRepository,
                                ServerRepository serverRepository,
                                UserRepository userRepository,
-                               CommandInvoker commandInvoker) {
+                               CommandInvoker commandInvoker,
+                               NotificationService notificationService) {
         this.ticketRepository = ticketRepository;
         this.checklistRepository = checklistRepository;
         this.serverRepository = serverRepository;
         this.userRepository = userRepository;
         this.commandInvoker = commandInvoker;
+        this.notificationService = notificationService;
     }
 
     public MaintenanceTicketEntity scheduleTicket(Long serverId, String title,
@@ -39,8 +42,10 @@ public class MaintenanceService {
                 ticketRepository, serverRepository,
                 serverId, title, description, priority, scheduledAt);
         commandInvoker.execute(cmd);
-        return ticketRepository.findById(cmd.getCreatedTicketId())
+        MaintenanceTicketEntity ticket = ticketRepository.findById(cmd.getCreatedTicketId())
                 .orElseThrow(() -> new IllegalStateException("Ticket not created"));
+        notificationService.notifyScheduled(ticket);
+        return ticket;
     }
 
     public MaintenanceTicketEntity assignTechnician(Long ticketId, Long technicianId) {
@@ -51,24 +56,32 @@ public class MaintenanceService {
 
     public MaintenanceTicketEntity startTicket(Long ticketId) {
         commandInvoker.execute(new StartMaintenanceCommand(ticketRepository, ticketId));
-        return getTicket(ticketId);
+        MaintenanceTicketEntity ticket = getTicket(ticketId);
+        notificationService.notifyStarted(ticket);
+        return ticket;
     }
 
     public MaintenanceTicketEntity completeTicket(Long ticketId) {
         commandInvoker.execute(new CompleteMaintenanceCommand(ticketRepository, ticketId));
-        return getTicket(ticketId);
+        MaintenanceTicketEntity ticket = getTicket(ticketId);
+        notificationService.notifyCompleted(ticket);
+        return ticket;
     }
 
     public MaintenanceTicketEntity cancelTicket(Long ticketId, String reason) {
         commandInvoker.execute(new CancelMaintenanceCommand(ticketRepository, ticketId, reason));
-        return getTicket(ticketId);
+        MaintenanceTicketEntity ticket = getTicket(ticketId);
+        notificationService.notifyCancelled(ticket);
+        return ticket;
     }
 
     public MaintenanceTicketEntity approveTicket(Long ticketId) {
         MaintenanceTicketEntity ticket = getTicket(ticketId);
         ticket.setApproved(true);
         ticket.setStatus("PENDING");
-        return ticketRepository.save(ticket);
+        MaintenanceTicketEntity saved = ticketRepository.save(ticket);
+        notificationService.notifyApproved(saved);
+        return saved;
     }
 
     @Transactional(readOnly = true)
