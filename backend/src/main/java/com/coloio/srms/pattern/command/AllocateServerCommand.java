@@ -19,7 +19,7 @@ public class AllocateServerCommand extends AbstractServerCommand {
 
     // state saved for undo
     private Long previousRackId;
-    private Integer previousUPosition;
+    private int previousUPosition;
     private ServerStatus previousStatus;
 
     public AllocateServerCommand(ServerService serverService,
