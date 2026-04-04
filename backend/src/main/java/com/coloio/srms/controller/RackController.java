@@ -2,6 +2,8 @@ package com.coloio.srms.controller;
 
 import com.coloio.srms.domain.enums.RackStatus;
 import com.coloio.srms.domain.rack.Rack;
+import com.coloio.srms.entity.RackEntity;
+import com.coloio.srms.repository.RackRepository;
 import com.coloio.srms.service.RackService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
@@ -18,9 +20,20 @@ import java.util.Map;
 public class RackController {
 
     private final RackService rackService;
+    private final RackRepository rackRepository;
 
-    public RackController(RackService rackService) {
+    public RackController(RackService rackService, RackRepository rackRepository) {
         this.rackService = rackService;
+        this.rackRepository = rackRepository;
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('DC_ADMIN','TECHNICIAN','MANAGER')")
+    public ResponseEntity<List<RackEntity>> search(
+            @RequestParam(required = false) Long zoneId,
+            @RequestParam(required = false) RackStatus status,
+            @RequestParam(required = false) Double maxPower) {
+        return ResponseEntity.ok(rackRepository.search(zoneId, status, maxPower));
     }
 
     @PostMapping
