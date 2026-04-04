@@ -2,11 +2,13 @@ package com.coloio.srms.controller;
 
 import com.coloio.srms.entity.AuditLogEntity;
 import com.coloio.srms.repository.AuditLogRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Audit", description = "Paginated audit trail (DC Admin only)")
 @RestController
 @RequestMapping("/api/audit")
 @PreAuthorize("hasRole('DC_ADMIN')")
