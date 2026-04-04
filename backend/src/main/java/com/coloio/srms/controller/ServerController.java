@@ -108,6 +108,15 @@ public class ServerController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('DC_ADMIN','TECHNICIAN')")
+    public ResponseEntity<Void> patchStatus(@PathVariable Long id,
+                                            @RequestBody Map<String, String> body) {
+        ServerStatus status = ServerStatus.valueOf(body.get("status"));
+        serverService.updateStatus(id, status);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/me")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<List<Map<String, Object>>> getMyServers(
