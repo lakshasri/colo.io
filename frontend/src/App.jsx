@@ -16,6 +16,7 @@ import MaintenanceDetail from './pages/maintenance/MaintenanceDetail'
 import MaintenanceCalendar from './pages/maintenance/MaintenanceCalendar'
 import ReportsPage from './pages/reports/ReportsPage'
 import UserList from './pages/users/UserList'
+import SlaList from './pages/sla/SlaList'
 import { Result, Button } from 'antd'
 import { useNavigate } from 'react-router-dom'
 
@@ -112,6 +113,12 @@ export default function App() {
       <Route path="/users" element={
         <RoleGuard allowedRoles={['DC_ADMIN']}>
           <UserList />
+        </RoleGuard>
+      } />
+
+      <Route path="/sla" element={
+        <RoleGuard allowedRoles={['DC_ADMIN', 'MANAGER', 'CUSTOMER']}>
+          <SlaList />
         </RoleGuard>
       } />
 
