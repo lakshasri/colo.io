@@ -3,6 +3,7 @@ package com.coloio.srms.controller;
 import com.coloio.srms.entity.ChecklistItemEntity;
 import com.coloio.srms.entity.MaintenanceTicketEntity;
 import com.coloio.srms.pattern.command.*;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import com.coloio.srms.repository.RackRepository;
 import com.coloio.srms.repository.ServerRepository;
@@ -88,18 +89,21 @@ public class MaintenanceController {
         return maintenanceService.assignTechnician(id, Long.parseLong(body.get("technicianId")));
     }
 
+    @Operation(summary = "Transition ticket to IN_PROGRESS")
     @PostMapping("/{id}/start")
     @PreAuthorize("hasAnyRole('DC_ADMIN','TECHNICIAN')")
     public MaintenanceTicketEntity start(@PathVariable Long id) {
         return maintenanceService.startTicket(id);
     }
 
+    @Operation(summary = "Mark ticket as RESOLVED")
     @PostMapping("/{id}/complete")
     @PreAuthorize("hasAnyRole('DC_ADMIN','TECHNICIAN')")
     public MaintenanceTicketEntity complete(@PathVariable Long id) {
         return maintenanceService.completeTicket(id);
     }
 
+    @Operation(summary = "Cancel ticket with reason")
     @PostMapping("/{id}/cancel")
     @PreAuthorize("hasAnyRole('DC_ADMIN','TECHNICIAN')")
     public MaintenanceTicketEntity cancel(@PathVariable Long id,
@@ -107,6 +111,7 @@ public class MaintenanceController {
         return maintenanceService.cancelTicket(id, body.getOrDefault("reason", "No reason given"));
     }
 
+    @Operation(summary = "Manager approval for a ticket")
     @PutMapping("/{id}/approve")
     @PreAuthorize("hasRole('MANAGER')")
     public MaintenanceTicketEntity approve(@PathVariable Long id) {
