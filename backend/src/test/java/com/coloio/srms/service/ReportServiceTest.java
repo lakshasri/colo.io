@@ -27,15 +27,11 @@ class ReportServiceTest {
 
     @InjectMocks ReportService reportService;
 
-    @BeforeEach
-    void setUp() {
+    @Test
+    void capacityReport_returnsCorrectTotals() {
         when(zoneRepository.findAll()).thenReturn(List.of());
         when(rackRepository.count()).thenReturn(5L);
         when(serverRepository.count()).thenReturn(20L);
-    }
-
-    @Test
-    void capacityReport_returnsCorrectTotals() {
         Map<String, Object> report = reportService.capacityReport();
         assertEquals(5L, report.get("totalRacks"));
         assertEquals(20L, report.get("totalServers"));
