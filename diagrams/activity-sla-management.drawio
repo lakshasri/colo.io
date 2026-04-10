@@ -1,0 +1,106 @@
+<mxfile host="app.diagrams.net" modified="2026-04-10" agent="colo.io" version="24.0">
+  <diagram id="act-sla" name="Activity — SLA Management">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" /><mxCell id="1" parent="0" />
+
+        <mxCell id="2" value="SLA Management Workflow" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontStyle=1;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="335" y="20" width="400" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="3" value="" style="ellipse;fillColor=#000000;strokeColor=#000000;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="550" y="70" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="4" value="DC_ADMIN / MANAGER: POST /api/sla\n{customerId, name, uptimePct, responseMin, resolutionHrs, startDate, endDate}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="130" width="390" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="5" value="Customer exists?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="475" y="220" width="180" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="6" value="Return 404 Customer not found" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="730" y="235" width="220" height="45" as="geometry" />
+        </mxCell>
+
+        <mxCell id="7" value="SlaEntity created\nstatus = ACTIVE\nSave to DB" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="455" y="320" width="220" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="8" value="Return 201 SlaEntity" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="455" y="405" width="220" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- SLA in use -->
+        <mxCell id="9" value="SLA Active — System monitors uptime &amp; response times" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="390" y="480" width="350" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Status change decision -->
+        <mxCell id="10" value="Status change request?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="460" y="560" width="210" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Suspend branch -->
+        <mxCell id="11" value="PATCH /sla/{id}/status\n{status: SUSPENDED}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="200" y="665" width="200" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- Expire branch -->
+        <mxCell id="12" value="endDate passed?\n(auto-detected on updateStatus)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="730" y="655" width="210" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Force expire -->
+        <mxCell id="13" value="PATCH /sla/{id}/status\n{status: EXPIRED}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="460" y="665" width="200" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- Auto expire -->
+        <mxCell id="14" value="status = EXPIRED\n(auto-set)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="760" y="770" width="170" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Resume from suspended -->
+        <mxCell id="15" value="PATCH /sla/{id}/status\n{status: ACTIVE}\n(resume)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="200" y="770" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Delete -->
+        <mxCell id="16" value="DC_ADMIN: DELETE /sla/{id}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#000000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="460" y="860" width="210" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- End -->
+        <mxCell id="17" value="" style="ellipse;fillColor=#000000;strokeColor=#000000;html=1;shape=doubleEllipse;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="550" y="940" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="18" value="" style="ellipse;fillColor=#000000;strokeColor=#000000;html=1;shape=doubleEllipse;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="815" y="300" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Edges -->
+        <mxCell id="30" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" source="3" target="4" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="31" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" source="4" target="5" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="32" value="No" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" source="5" target="6" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="33" value="Yes" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" source="5" target="7" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="34" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" source="6" target="18" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="35" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" source="7" target="8" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="36" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" source="8" target="9" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="37" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" source="9" target="10" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="38" value="Suspend" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" source="10" target="11" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="39" value="Expire" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" source="10" target="13" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="40" value="Auto" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" source="10" target="12" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="41" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" source="11" target="15" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="42" value="Yes" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" source="12" target="14" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="43" value="No" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" source="12" target="13" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="44" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" source="13" target="16" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="45" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" source="14" target="16" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="46" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" source="15" target="9" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="47" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" source="16" target="17" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

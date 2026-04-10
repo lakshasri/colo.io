@@ -1,0 +1,82 @@
+<mxfile host="app.diagrams.net" modified="2026-04-10" agent="colo.io" version="24.0">
+  <diagram id="state-server" name="State — Server Status">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" /><mxCell id="1" parent="0" />
+
+        <mxCell id="2" value="Server Status — State Diagram" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontStyle=1;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="335" y="20" width="400" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Initial -->
+        <mxCell id="3" value="" style="ellipse;fillColor=#000000;strokeColor=#000000;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="540" y="70" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- UNALLOCATED -->
+        <mxCell id="4" value="UNALLOCATED" style="rounded=1;whiteSpace=wrap;html=1;arcSize=50;fillColor=#f5f5f5;strokeColor=#000000;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="455" y="140" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- OPERATIONAL -->
+        <mxCell id="5" value="OPERATIONAL" style="rounded=1;whiteSpace=wrap;html=1;arcSize=50;fillColor=#f5f5f5;strokeColor=#000000;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="455" y="280" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- MAINTENANCE -->
+        <mxCell id="6" value="MAINTENANCE" style="rounded=1;whiteSpace=wrap;html=1;arcSize=50;fillColor=#f5f5f5;strokeColor=#000000;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="420" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- FAULTY -->
+        <mxCell id="7" value="FAULTY" style="rounded=1;whiteSpace=wrap;html=1;arcSize=50;fillColor=#f5f5f5;strokeColor=#000000;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="710" y="420" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- DECOMMISSIONED -->
+        <mxCell id="8" value="DECOMMISSIONED" style="rounded=1;whiteSpace=wrap;html=1;arcSize=50;fillColor=#f5f5f5;strokeColor=#000000;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="455" y="570" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Final -->
+        <mxCell id="9" value="" style="ellipse;fillColor=#000000;strokeColor=#000000;html=1;shape=doubleEllipse;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="540" y="680" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Transitions -->
+        <mxCell id="20" value="register server" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;" edge="1" source="3" target="4" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="21" value="allocate + provision" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;" edge="1" source="4" target="5" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="22" value="schedule maintenance" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" source="5" target="6" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="23" value="complete maintenance" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="6" target="5" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="180" y="450" /><mxPoint x="180" y="310" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="24" value="alert / hardware fault" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="5" target="7" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="25" value="repair scheduled" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" source="7" target="6" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="930" y="450" /><mxPoint x="930" y="640" /><mxPoint x="380" y="640" /><mxPoint x="380" y="450" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="26" value="decommission" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;" edge="1" source="5" target="8" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="555" y="340" /><mxPoint x="555" y="600" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="27" value="decommission" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;" edge="1" source="6" target="8" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="28" value="decommission" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;" edge="1" source="4" target="8" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="420" y="170" /><mxPoint x="390" y="170" /><mxPoint x="390" y="600" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="29" value="removed" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;" edge="1" source="8" target="9" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- Entry/Exit Actions note -->
+        <mxCell id="30" value="Entry actions:&lt;br/&gt;OPERATIONAL → MonitoringService starts polling&lt;br/&gt;MAINTENANCE → Rack.notifyObservers(MAINTENANCE)&lt;br/&gt;DECOMMISSIONED → rack.usedUSpace--, rack.currentPowerKw--" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="650" width="380" height="75" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,108 @@
+<mxfile host="app.diagrams.net" modified="2026-04-10" agent="colo.io" version="24.0">
+  <diagram id="state-session" name="State — User Session">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" /><mxCell id="1" parent="0" />
+
+        <mxCell id="2" value="User Session — State Diagram (JWT Auth)" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontStyle=1;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="285" y="20" width="500" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Initial -->
+        <mxCell id="3" value="" style="ellipse;fillColor=#000000;strokeColor=#000000;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="540" y="70" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- UNAUTHENTICATED -->
+        <mxCell id="4" value="UNAUTHENTICATED" style="rounded=1;whiteSpace=wrap;html=1;arcSize=50;fillColor=#f5f5f5;strokeColor=#000000;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="430" y="140" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- AUTHENTICATING -->
+        <mxCell id="5" value="AUTHENTICATING" style="rounded=1;whiteSpace=wrap;html=1;arcSize=50;fillColor=#f5f5f5;strokeColor=#000000;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="430" y="260" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- AUTHENTICATED -->
+        <mxCell id="6" value="AUTHENTICATED" style="rounded=1;whiteSpace=wrap;html=1;arcSize=50;fillColor=#f5f5f5;strokeColor=#000000;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="430" y="390" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ROLE sub-states group label -->
+        <mxCell id="7" value="Role-based Access Context" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontStyle=2;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="120" y="490" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- DC_ADMIN -->
+        <mxCell id="8" value="DC_ADMIN\nDashboard" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#f5f5f5;strokeColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="100" y="520" width="130" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- MANAGER -->
+        <mxCell id="9" value="MANAGER\nDashboard" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#f5f5f5;strokeColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="280" y="520" width="130" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- TECHNICIAN -->
+        <mxCell id="10" value="TECHNICIAN\nDashboard" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#f5f5f5;strokeColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="470" y="520" width="130" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- CUSTOMER -->
+        <mxCell id="11" value="CUSTOMER\nDashboard" style="rounded=1;whiteSpace=wrap;html=1;arcSize=30;fillColor=#f5f5f5;strokeColor=#000000;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="660" y="520" width="130" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- TOKEN_EXPIRED -->
+        <mxCell id="12" value="TOKEN_EXPIRED" style="rounded=1;whiteSpace=wrap;html=1;arcSize=50;fillColor=#f5f5f5;strokeColor=#000000;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="700" y="390" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- AUTH_FAILED -->
+        <mxCell id="13" value="AUTH_FAILED" style="rounded=1;whiteSpace=wrap;html=1;arcSize=50;fillColor=#f5f5f5;strokeColor=#000000;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="700" y="260" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Final -->
+        <mxCell id="14" value="" style="ellipse;fillColor=#000000;strokeColor=#000000;html=1;shape=doubleEllipse;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="540" y="660" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Transitions -->
+        <mxCell id="30" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;" edge="1" source="3" target="4" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="31" value="POST /api/auth/login" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;" edge="1" source="4" target="5" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="32" value="credentials valid\nJWT issued" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;exitX=0;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="5" target="6" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="380" y="290" /><mxPoint x="380" y="420" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="33" value="invalid credentials\n(401 Unauthorized)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;" edge="1" source="5" target="13" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="34" value="retry" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;exitX=0.5;exitY=0;entryX=1;entryY=0.5;" edge="1" source="13" target="4" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="800" y="200" /><mxPoint x="650" y="200" /><mxPoint x="650" y="170" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="35" value="role=DC_ADMIN" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;" edge="1" source="6" target="8" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="36" value="role=MANAGER" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;" edge="1" source="6" target="9" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="37" value="role=TECHNICIAN" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;" edge="1" source="6" target="10" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="38" value="role=CUSTOMER" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;" edge="1" source="6" target="11" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="39" value="accessToken expires\n(JwtAuthFilter rejects)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;" edge="1" source="6" target="12" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="40" value="POST /api/auth/refresh\n(refreshToken valid)" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;exitX=0.5;exitY=0;entryX=1;entryY=0.5;" edge="1" source="12" target="6" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="800" y="350" /><mxPoint x="800" y="320" /><mxPoint x="650" y="320" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="41" value="logout / token revoked" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;" edge="1" source="8" target="14" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="42" value="logout" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;" edge="1" source="9" target="14" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="43" value="logout" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;" edge="1" source="10" target="14" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="44" value="logout" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=11;" edge="1" source="11" target="14" parent="1"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- Notes -->
+        <mxCell id="50" value="JwtAuthFilter intercepts every request:&lt;br/&gt;• Validates Bearer token from Authorization header&lt;br/&gt;• Sets SecurityContextHolder with UserDetails + role&lt;br/&gt;• Rejects with 403 if role insufficient for endpoint" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="650" width="420" height="75" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
