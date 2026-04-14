@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Layout, Menu, Button, Avatar, Space, Badge, Tooltip } from 'antd'
-import { LogoutOutlined, UserOutlined, BellOutlined } from '@ant-design/icons'
+import { LogoutOutlined, UserOutlined, BellOutlined, BulbOutlined, BulbFilled } from '@ant-design/icons'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useTheme } from '../context/ThemeContext'
 import { Client } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 
@@ -10,9 +11,9 @@ const { Header, Sider, Content } = Layout
 
 export default function AppLayout({ menuItems, children }) {
   const { user, logout } = useAuth()
+  const { isDark, toggle: toggleTheme } = useTheme()
   const navigate = useNavigate()
   const location = useLocation()
-  const [collapsed, setCollapsed] = useState(false)
   const [notifCount, setNotifCount] = useState(0)
   const stompRef = useRef(null)
 
@@ -38,35 +39,21 @@ export default function AppLayout({ menuItems, children }) {
   return (
     <Layout style={{ minHeight: '100vh', fontFamily: "'Ubuntu Mono', monospace" }}>
       <Sider
-        collapsible
-        collapsed={collapsed}
-        onCollapse={setCollapsed}
+        collapsible={false}
         theme="dark"
         style={{ background: '#000', borderRight: '1px solid #1a1a1a' }}
         width={220}
       >
         {/* logo area */}
         <div style={{
-          padding: collapsed ? '20px 0' : '20px 20px',
+          padding: '24px 20px',
           borderBottom: '1px solid #1a1a1a',
           display: 'flex',
           alignItems: 'center',
-          gap: 10,
-          justifyContent: collapsed ? 'center' : 'flex-start',
+          justifyContent: 'center',
         }}>
           <img src="/logo.png" alt="colo.io"
-            style={{ width: 28, height: 28, objectFit: 'contain', filter: 'invert(1) grayscale(1)' }} />
-          {!collapsed && (
-            <span style={{
-              color: '#fff',
-              fontSize: 15,
-              fontWeight: 700,
-              fontFamily: "'Ubuntu Mono', monospace",
-              letterSpacing: '0.02em',
-            }}>
-              colo.io
-            </span>
-          )}
+            style={{ width: 120, height: 120, objectFit: 'contain', filter: 'invert(1) grayscale(1)' }} />
         </div>
 
         <Menu
@@ -89,12 +76,12 @@ export default function AppLayout({ menuItems, children }) {
 
       <Layout>
         <Header style={{
-          background: '#fff',
+          background: isDark ? '#141414' : '#fff',
           padding: '0 24px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          borderBottom: '1px solid #e0e0e0',
+          borderBottom: `1px solid ${isDark ? '#303030' : '#e0e0e0'}`,
           height: 52,
         }}>
           <span style={{
@@ -108,14 +95,23 @@ export default function AppLayout({ menuItems, children }) {
           </span>
 
           <Space size={4}>
-            <Tooltip title="Notifications">
-              <Badge count={notifCount} size="small" color="#000">
+            <Tooltip title={isDark ? 'Light mode' : 'Dark mode'}>
+              <Button
+                icon={isDark ? <BulbFilled /> : <BulbOutlined />}
+                type="text"
+                size="small"
+                onClick={toggleTheme}
+                style={{ color: isDark ? '#e0e0e0' : '#666' }}
+              />
+            </Tooltip>
+            <Tooltip title="Alerts">
+              <Badge count={notifCount} size="small" color={isDark ? '#fff' : '#000'}>
                 <Button
                   icon={<BellOutlined />}
                   type="text"
                   size="small"
-                  onClick={() => setNotifCount(0)}
-                  style={{ color: '#666' }}
+                  onClick={() => { setNotifCount(0); navigate('/alerts') }}
+                  style={{ color: isDark ? '#e0e0e0' : '#666' }}
                 />
               </Badge>
             </Tooltip>
@@ -124,7 +120,7 @@ export default function AppLayout({ menuItems, children }) {
               icon={<UserOutlined />}
               style={{ background: '#000', color: '#fff', fontSize: 12 }}
             />
-            <span style={{ fontSize: 13, color: '#333', fontFamily: "'Ubuntu Mono', monospace" }}>
+            <span style={{ fontSize: 13, color: isDark ? '#e0e0e0' : '#333', fontFamily: "'Ubuntu Mono', monospace" }}>
               {user?.username}
             </span>
             <Button
@@ -134,7 +130,7 @@ export default function AppLayout({ menuItems, children }) {
               size="small"
               style={{ color: '#999', fontSize: 12 }}
             >
-              {!collapsed && 'logout'}
+              {'logout'}
             </Button>
           </Space>
         </Header>
@@ -142,7 +138,7 @@ export default function AppLayout({ menuItems, children }) {
         <Content style={{
           margin: 24,
           padding: 24,
-          background: '#fff',
+          background: isDark ? '#141414' : '#fff',
           minHeight: 360,
           fontFamily: "'Ubuntu Mono', monospace",
         }}>
