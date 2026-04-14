@@ -48,12 +48,11 @@ export default function Login() {
         <img
           src="/logo.png"
           alt="colo.io"
-          style={{ width: 120, marginBottom: 48, filter: 'invert(1) grayscale(1)' }}
+          style={{ width: 320, marginBottom: 64, filter: 'invert(1) grayscale(1)' }}
         />
         <div style={{ color: '#fff', fontSize: 13, lineHeight: 2, opacity: 0.35, letterSpacing: '0.02em' }}>
           <div>// server & rack management system</div>
           <div>// colocation data center platform</div>
-          <div>// v2.0 — sprint 6 complete</div>
         </div>
 
         <div style={{ marginTop: 64, display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -78,13 +77,15 @@ export default function Login() {
         flexDirection: 'column',
         justifyContent: 'center',
         padding: '64px 56px',
-        background: '#fff',
+        background: '#0a0a0a',
+        color: '#fff',
+        borderLeft: '1px solid #222',
       }}>
         <div style={{ marginBottom: 40 }}>
-          <div style={{ fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#999', marginBottom: 8 }}>
+          <div style={{ fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#888', marginBottom: 8 }}>
             colo.io
           </div>
-          <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.01em' }}>
+          <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.01em', color: '#fff' }}>
             Sign in
           </div>
         </div>
@@ -99,7 +100,7 @@ export default function Login() {
             style={{ marginBottom: 16 }}>
             <Input
               placeholder="username"
-              style={{ fontFamily: 'inherit', fontSize: 14, height: 44, borderColor: '#e0e0e0' }}
+              style={{ fontFamily: 'inherit', fontSize: 14, height: 44, background: '#1a1a1a', borderColor: '#333', color: '#fff' }}
             />
           </Form.Item>
 
@@ -107,24 +108,19 @@ export default function Login() {
             style={{ marginBottom: 32 }}>
             <Input.Password
               placeholder="password"
-              style={{ fontFamily: 'inherit', fontSize: 14, height: 44, borderColor: '#e0e0e0' }}
+              style={{ fontFamily: 'inherit', fontSize: 14, height: 44, background: '#1a1a1a', borderColor: '#333', color: '#fff' }}
             />
           </Form.Item>
 
           <Button
-            type="primary"
             htmlType="submit"
             block
             loading={loading}
-            style={{ height: 44, fontSize: 13, letterSpacing: '0.08em', textTransform: 'uppercase' }}
+            style={{ height: 44, fontSize: 13, letterSpacing: '0.08em', textTransform: 'uppercase', background: '#fff', color: '#000', borderColor: '#fff' }}
           >
             Sign In →
           </Button>
         </Form>
-
-        <div style={{ marginTop: 40, fontSize: 11, color: '#ccc', letterSpacing: '0.04em' }}>
-          SRMS · OOAD Project
-        </div>
       </div>
     </div>
   )
