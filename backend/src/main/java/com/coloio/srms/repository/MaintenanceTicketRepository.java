@@ -13,4 +13,5 @@ public interface MaintenanceTicketRepository extends JpaRepository<MaintenanceTi
     List<MaintenanceTicketEntity> findAllByOrderByCreatedAtDesc();
     long countByStatus(String status);
     List<MaintenanceTicketEntity> findByApprovedFalseAndStatusOrderByCreatedAtDesc(String status);
+    long countByApprovedFalseAndStatus(String status);
 }
