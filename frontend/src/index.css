@@ -30,20 +30,21 @@ html, body {
 #cursor-dot {
   position: fixed;
   top: 0; left: 0;
-  width: 6px; height: 6px;
-  background: #000;
+  width: 8px; height: 8px;
+  background: #fff;
   border-radius: 50%;
   pointer-events: none;
   z-index: 99999;
   transform: translate(-50%, -50%);
   transition: transform 0.05s ease;
+  mix-blend-mode: difference;
 }
 
 #cursor-ring {
   position: fixed;
   top: 0; left: 0;
   width: 28px; height: 28px;
-  border: 1.5px solid #000;
+  border: 1.5px solid #fff;
   border-radius: 50%;
   pointer-events: none;
   z-index: 99998;
@@ -194,6 +195,208 @@ button:hover ~ #cursor-ring {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font) !important;
   letter-spacing: -0.01em;
+}
+
+/* ── Dark mode overrides ──────────────────────── */
+body.dark-mode .ant-layout,
+body.dark-mode .ant-layout-content {
+  background: #0a0a0a !important;
+}
+
+body.dark-mode .ant-layout-header {
+  background: #141414 !important;
+  border-bottom-color: #303030 !important;
+}
+
+body.dark-mode .ant-card {
+  background: #141414 !important;
+  border-color: #303030 !important;
+}
+
+body.dark-mode .ant-card-head {
+  border-bottom-color: #303030 !important;
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .ant-table {
+  background: #141414 !important;
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .ant-table-thead > tr > th {
+  background: #1a1a1a !important;
+  color: #999 !important;
+}
+
+body.dark-mode .ant-table-tbody > tr > td {
+  border-color: #303030 !important;
+}
+
+body.dark-mode .ant-table-tbody > tr:hover > td {
+  background: #1a1a1a !important;
+}
+
+body.dark-mode .ant-modal-content {
+  background: #1a1a1a !important;
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .ant-input,
+body.dark-mode .ant-input-affix-wrapper,
+body.dark-mode .ant-select-selector,
+body.dark-mode .ant-input-password {
+  background: #1a1a1a !important;
+  border-color: #303030 !important;
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .ant-input-affix-wrapper > .ant-input,
+body.dark-mode .ant-input-affix-wrapper input.ant-input {
+  background: transparent !important;
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .ant-input::placeholder,
+body.dark-mode .ant-input-affix-wrapper input::placeholder,
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder {
+  color: #777 !important;
+  opacity: 1 !important;
+}
+
+body.dark-mode .ant-select-selection-placeholder {
+  color: #777 !important;
+}
+
+body.dark-mode .ant-input-password-icon,
+body.dark-mode .anticon-eye,
+body.dark-mode .anticon-eye-invisible {
+  color: #999 !important;
+}
+
+body.dark-mode .ant-form-item-label > label {
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .ant-form-item-explain-error {
+  color: #ff6b6b !important;
+}
+
+body.dark-mode .ant-statistic-title {
+  color: #999 !important;
+}
+
+body.dark-mode .ant-statistic-content {
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .ant-typography {
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode h1, body.dark-mode h2, body.dark-mode h3,
+body.dark-mode h4, body.dark-mode h5, body.dark-mode h6 {
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode ::selection {
+  background: #fff;
+  color: #000;
+}
+
+body.dark-mode #cursor-dot {
+  background: #fff;
+}
+
+body.dark-mode #cursor-ring {
+  border-color: #fff;
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb {
+  background: #303030;
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Calendar */
+body.dark-mode .ant-picker-calendar,
+body.dark-mode .ant-picker-calendar-full {
+  background: #141414 !important;
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .ant-picker-calendar-full .ant-picker-panel {
+  background: #141414 !important;
+}
+
+body.dark-mode .ant-picker-calendar .ant-picker-content th,
+body.dark-mode .ant-picker-calendar-full .ant-picker-content th {
+  color: #999 !important;
+  background: #141414 !important;
+}
+
+body.dark-mode .ant-picker-calendar-date,
+body.dark-mode .ant-picker-calendar-full .ant-picker-calendar-date {
+  background: #141414 !important;
+  border-top-color: #303030 !important;
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .ant-picker-calendar-date-value {
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .ant-picker-cell-in-view .ant-picker-calendar-date-value {
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .ant-picker-cell:not(.ant-picker-cell-in-view) .ant-picker-calendar-date-value {
+  color: #555 !important;
+}
+
+body.dark-mode .ant-picker-calendar-date:hover {
+  background: #1f1f1f !important;
+}
+
+body.dark-mode .ant-picker-cell-selected .ant-picker-calendar-date,
+body.dark-mode .ant-picker-calendar-date-today {
+  background: #1f1f1f !important;
+  border-top-color: #fff !important;
+}
+
+body.dark-mode .ant-picker-calendar-date-today .ant-picker-calendar-date-value {
+  color: #fff !important;
+  font-weight: 700 !important;
+}
+
+/* Radio buttons (Month/Year toggle) */
+body.dark-mode .ant-radio-button-wrapper {
+  background: #1a1a1a !important;
+  border-color: #303030 !important;
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .ant-radio-button-wrapper-checked {
+  background: #fff !important;
+  color: #000 !important;
+  border-color: #fff !important;
+}
+
+/* Select dropdown background */
+body.dark-mode .ant-select-dropdown {
+  background: #1a1a1a !important;
+  border: 1px solid #303030 !important;
+}
+
+body.dark-mode .ant-select-item {
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .ant-select-item-option-active,
+body.dark-mode .ant-select-item-option-selected {
+  background: #2a2a2a !important;
 }
 
 /* scrollbar */
