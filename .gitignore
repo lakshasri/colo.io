@@ -1,5 +1,5 @@
 Reference/
-
+Plan/
 # Build artifacts
 backend/target/
 frontend/node_modules/
@@ -19,6 +19,3 @@ frontend/.vite/
 # OS
 .DS_Store
 Thumbs.db
-
-# Claude
-.claude/
