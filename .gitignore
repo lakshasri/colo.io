@@ -1,5 +1,8 @@
 Reference/
 Plan/
+plan/
+Diagram/
+diagram/
 # Build artifacts
 backend/target/
 frontend/node_modules/
