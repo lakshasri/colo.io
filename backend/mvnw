@@ -1,0 +1,20 @@
+#!/bin/sh
+# Licensed to the Apache Software Foundation (ASF)
+
+set -e
+
+PRG="$0"
+while [ -h "$PRG" ]; do
+  ls=$(ls -ld "$PRG")
+  link=$(expr "$ls" : '.*-> \(.*\)$')
+  if expr "$link" : '/.*' > /dev/null; then
+    PRG="$link"
+  else
+    PRG=$(dirname "$PRG")/"$link"
+  fi
+done
+
+PRGDIR=$(dirname "$PRG")
+MAVEN_HOME=$(cd "$PRGDIR/.mvn" > /dev/null; pwd)
+
+exec "$MAVEN_HOME/wrapper/maven-wrapper.sh" "$@"
